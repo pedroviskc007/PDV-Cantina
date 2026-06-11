@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<!-- 
+  PDV Cantina Escoteira
+  Copyright © Pedro Lemos, 2026
+  Licença: Creative Commons BY-NC-ND 4.0
+  https://creativecommons.org/licenses/by-nc-nd/4.0/
+  Uso permitido exclusivamente para grupos escoteiros sem fins comerciais.
+  Redistribuição modificada sem autorização do autor é proibida.
+  Protegido pela Lei 9.610/98 (art. 7º) e Lei 9.609/98 (art. 2º).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>PDV Sênior</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f0ec; min-height: 100vh; }
+.app { max-width: 480px; margin: 0 auto; background: #f0f0ec; min-height: 100vh; position: relative; }
+.header { background: #8B1A1A; color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 15px; font-weight: 500; letter-spacing: 0.5px; }
+.header-badge { font-size: 11px; background: #6b1414; color: #f5e0cc; padding: 3px 8px; border-radius: 20px; }
+.nav { display: flex; background: #fff; border-bottom: 0.5px solid rgba(0,0,0,0.12); position: sticky; top: 0; z-index: 10; }
+.nav-btn { flex: 1; padding: 8px 2px; font-size: 11px; color: #888; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.nav-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-btn.active { color: #8B1A1A; border-bottom-color: #8B1A1A; font-weight: 500; }
+.screen { display: none; padding: 12px; padding-bottom: 80px; }
+.screen.active { display: block; }
+.section-title { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.8px; margin: 0 0 8px; }
+.card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+.products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+.product-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 12px 8px; cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; }
+.product-btn:active { background: #f5f5f5; }
+.product-name { font-size: 13px; font-weight: 500; color: #111; }
+.product-price { font-size: 12px; color: #888; margin-top: 2px; }
+.cart-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+.cart-item:last-child { border-bottom: none; }
+.cart-item-name { flex: 1; font-size: 13px; color: #111; }
+.cart-qty { display: flex; align-items: center; gap: 6px; }
+.qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 0.5px solid rgba(0,0,0,0.2); background: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: #111; -webkit-tap-highlight-color: transparent; }
+.cart-item-price { font-size: 13px; font-weight: 500; min-width: 56px; text-align: right; color: #111; }
+.total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 4px; }
+.total-label { font-size: 13px; color: #888; }
+.total-value { font-size: 22px; font-weight: 600; color: #111; }
+.pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
+.pay-btn { padding: 10px 4px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; font-size: 12px; cursor: pointer; color: #333; display: flex; flex-direction: column; align-items: center; gap: 5px; -webkit-tap-highlight-color: transparent; }
+.pay-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pay-btn.selected { border-color: #8B1A1A; background: #f9e8e8; color: #8B1A1A; }
+.btn-primary { width: 100%; padding: 13px; background: #8B1A1A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px; -webkit-tap-highlight-color: transparent; }
+.btn-primary:disabled { background: #ccc; color: #888; cursor: not-allowed; }
+.btn-secondary { padding: 10px; background: none; color: #8B1A1A; border: 0.5px solid #8B1A1A; border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; -webkit-tap-highlight-color: transparent; }
+.btn-danger { padding: 6px 12px; background: none; color: #a32d2d; border: 0.5px solid #a32d2d; border-radius: 8px; font-size: 12px; cursor: pointer; }
+.input-field { width: 100%; padding: 10px 12px; border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px; font-size: 14px; background: #fff; color: #111; margin-bottom: 8px; outline: none; }
+.input-field:focus { border-color: #8B1A1A; }
+.tab-account { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tab-account-name { font-size: 14px; font-weight: 500; color: #111; }
+.tab-account-val { font-size: 14px; color: #a32d2d; font-weight: 500; }
+.detail-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: #666; }
+.sale-item { display: flex; flex-direction: column; gap: 3px; padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+.sale-item:last-child { border-bottom: none; }
+.sale-meta { display: flex; justify-content: space-between; align-items: center; }
+.sale-desc { font-size: 12px; color: #888; }
+.badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+.badge-green { background: #eaf3de; color: #3b6d11; }
+.badge-blue { background: #e6f1fb; color: #185fa5; }
+.badge-amber { background: #faeeda; color: #854f0b; }
+.badge-red { background: #fcebeb; color: #a32d2d; }
+.empty-state { text-align: center; padding: 32px 16px; color: #aaa; font-size: 13px; }
+.empty-state svg { width: 36px; height: 36px; stroke: #ccc; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; margin: 0 auto 10px; display: block; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 20px 20px 0 0; padding: 20px 16px 32px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 16px; font-weight: 500; margin-bottom: 14px; color: #111; }
+.modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: #888; line-height: 1; }
+.stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+.stat-card { background: #f5f5f2; border-radius: 8px; padding: 10px 12px; }
+.stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+.stat-value { font-size: 20px; font-weight: 600; color: #111; }
+.troco-box { background: #e8f3ec; border-radius: 8px; padding: 12px 14px; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; }
+.troco-box.insuf { background: #fcebeb; }
+.troco-label { font-size: 13px; color: #0f6e56; }
+.troco-box.insuf .troco-label { color: #a32d2d; }
+.troco-value { font-size: 22px; font-weight: 600; color: #0f6e56; }
+.troco-box.insuf .troco-value { color: #a32d2d; }
+.pix-box { text-align: center; padding: 16px 0 8px; }
+.pix-chave { font-size: 12px; color: #888; margin-top: 8px; }
+.pix-valor { font-size: 18px; font-weight: 600; color: #8B1A1A; margin: 4px 0 12px; }
+.pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 4px; }
+.pay-choice-btn { padding: 14px 8px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #111; -webkit-tap-highlight-color: transparent; }
+.pay-choice-btn:active { background: #f0f0ec; }
+.legend-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid rgba(0,0,0,0.06); }
+.legend-item:last-child { border-bottom: none; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { font-size: 13px; color: #444; flex: 1; }
+.legend-val { font-size: 13px; font-weight: 600; color: #111; }
+.legend-pct { font-size: 11px; color: #888; min-width: 36px; text-align: right; }
+
+/* ── Landing page ─────────────────────────────────────────────────────────── */
+.landing {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #1a1a1a;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 32px 20px 48px;
+  box-sizing: border-box;
+}
+.landing.active { display: block; }
+.landing-logo {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 0 auto 20px;
+}
+.landing-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.landing-subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 32px;
+}
+.landing-card {
+  background: #242424;
+  border-radius: 14px;
+  padding: 20px 16px;
+  margin-bottom: 16px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.landing-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 10px;
+}
+.landing-input {
+  width: 100%;
+  padding: 11px 14px;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+}
+.landing-input:focus { border-color: #666; }
+.branch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.branch-btn {
+  padding: 14px 8px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: #333;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.branch-btn:active { opacity: 0.8; }
+.branch-btn.selected { border-color: #fff; }
+.branch-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+}
+.branch-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+}
+.branch-sub {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+.landing-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #333;
+  border: 1px dashed #555;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 14px;
+}
+.landing-upload-label:active { background: #3a3a3a; }
+#landing-logo-preview {
+  display: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 10px auto 0;
+  display: block;
+}
+.landing-btn {
+  width: 100%;
+  max-width: 420px;
+  display: block;
+  margin: 24px auto 0;
+  padding: 16px;
+  background: #fff;
+  color: #111;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.landing-btn:active { opacity: 0.85; }
+.landing-skip {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<!-- LANDING PAGE DE SETUP -->
+<div class="landing" id="landing-page">
+  <p class="landing-title">&#x26FA; PDV Cantina</p>
+  <p class="landing-subtitle">Configure o app para a sua seção antes de começar.</p>
+
+  <div class="landing-card">
+    <p class="landing-label">Nome da seção</p>
+    <input class="landing-input" id="landing-section-name" placeholder="Ex: Tropa Sênior Tracatrá II" />
+  </div>
+
+  <div class="landing-card">
+    <p class="landing-label">Ramo escoteiro</p>
+    <div class="branch-grid" id="branch-grid">
+      <button class="branch-btn" data-color="#FAB81B" onclick="selectBranch(this)">
+        <div class="branch-dot" style="background:#FAB81B;"></div>
+        <div class="branch-name">Lobinho</div>
+        <div class="branch-sub">7–10 anos</div>
+      </button>
+      <button class="branch-btn" data-color="#005321" onclick="selectBranch(this)">
+        <div class="branch-dot" style="background:#005321;"></div>
+        <div class="branch-name">Escoteiro</div>
+        <div class="branch-sub">11–14 anos</div>
+      </button>
+      <button class="branch-btn" data-color="#A8153D" onclick="selectBranch(this)">
+        <div class="branch-dot" style="background:#A8153D;"></div>
+        <div class="branch-name">Sênior</div>
+        <div class="branch-sub">15–17 anos</div>
+      </button>
+      <button class="branch-btn" data-color="#E20613" onclick="selectBranch(this)">
+        <div class="branch-dot" style="background:#E20613;"></div>
+        <div class="branch-name">Pioneiro</div>
+        <div class="branch-sub">18–20 anos</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="landing-card">
+    <p class="landing-label">Logo da seção <span style="color:#666;font-weight:400;text-transform:none;">(opcional)</span></p>
+    <label class="landing-upload-label" for="landing-logo-input">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <span id="landing-logo-label">Toque para escolher uma imagem</span>
+    </label>
+    <input type="file" id="landing-logo-input" accept="image/*" style="display:none;" onchange="landingLogoSelected(this)" />
+    <img id="landing-logo-preview" style="display:none;" />
+  </div>
+
+  <div class="landing-card">
+    <p class="landing-label">Chave PIX</p>
+    <input class="landing-input" id="landing-pix-key" placeholder="E-mail, CPF, telefone ou chave aleatória" />
+  </div>
+
+  <button class="landing-btn" onclick="finishSetup()">Começar</button>
+  <span class="landing-skip" onclick="skipSetup()">Pular por enquanto</span>
+</div>
+
+<div class="app">
+  <div class="header">
+    <span class="header-title">PDV Sênior</span>
+    <span id="cart-count" class="header-badge">Carrinho: 0</span>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showScreen('venda')" id="nav-venda">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Venda
+    </button>
+    <button class="nav-btn" onclick="showScreen('contas')" id="nav-contas">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Contas
+    </button>
+    <button class="nav-btn" onclick="showScreen('resumo')" id="nav-resumo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10H12z"/></svg>
+      Resumo
+    </button>
+    <button class="nav-btn" onclick="showScreen('relatorio')" id="nav-relatorio">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Relatório
+    </button>
+    <button class="nav-btn" onclick="showScreen('config')" id="nav-config">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Config
+    </button>
+  </div>
+
+  <!-- VENDA -->
+  <div class="screen active" id="screen-venda">
+    <p class="section-title" style="margin-top:8px;">Produtos</p>
+    <div class="products-grid" id="products-grid"></div>
+    <p class="section-title">Carrinho</p>
+    <div class="card">
+      <div id="cart-items"><div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Nenhum item</div></div>
+      <div class="total-row"><span class="total-label">Total</span><span class="total-value" id="cart-total">R$ 0,00</span></div>
+    </div>
+    <div class="card">
+      <p class="section-title" style="margin-bottom:8px;">Pagamento</p>
+      <div class="pay-methods">
+        <button class="pay-btn" onclick="selectPay('dinheiro')" id="pay-dinheiro">
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+          Dinheiro
+        </button>
+        <button class="pay-btn" onclick="selectPay('pix')" id="pay-pix">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          PIX
+        </button>
+        <button class="pay-btn" onclick="selectPay('conta')" id="pay-conta">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Conta
+        </button>
+      </div>
+      <button class="btn-primary" id="btn-finalizar" onclick="openFinalize()" disabled>Finalizar venda</button>
+    </div>
+  </div>
+
+  <!-- CONTAS -->
+  <div class="screen" id="screen-contas">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 10px;">
+      <p class="section-title" style="margin:0;">Contas abertas</p>
+      <button class="btn-danger" style="border-color:#831D1B;color:#831D1B;" onclick="openModal('modal-new-account')">+ Nova conta</button>
+    </div>
+    <button class="btn-secondary" onclick="exportContasAbertas()" style="width:100%;margin-bottom:12px;">
+      &#x1F4C4; Exportar contas em aberto (.xlsx)
+    </button>
+    <div id="accounts-list"></div>
+  </div>
+
+  <!-- RESUMO -->
+  <div class="screen" id="screen-resumo">
+    <div class="stats-row" style="margin-top:8px;">
+      <div class="stat-card"><p class="stat-label">Total arrecadado</p><p class="stat-value" id="res-total">R$ 0</p></div>
+      <div class="stat-card"><p class="stat-label">Em aberto</p><p class="stat-value" id="res-aberto" style="color:#a32d2d;">R$ 0</p></div>
+    </div>
+    <div class="card">
+      <p class="section-title" style="margin-bottom:12px;">Distribuição por pagamento</p>
+      <canvas id="pie-chart" width="220" height="220" style="display:block;margin:0 auto 16px;"></canvas>
+      <div id="pie-legend"></div>
+    </div>
+  </div>
+
+  <!-- RELATÓRIO -->
+  <div class="screen" id="screen-relatorio">
+    <div class="stats-row" style="margin-top:8px;">
+      <div class="stat-card"><p class="stat-label">Total do dia</p><p class="stat-value" id="stat-total">R$ 0</p></div>
+      <div class="stat-card"><p class="stat-label">Vendas</p><p class="stat-value" id="stat-count">0</p></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><p class="stat-label">Dinheiro</p><p class="stat-value" id="stat-dinheiro">R$ 0</p></div>
+      <div class="stat-card"><p class="stat-label">PIX</p><p class="stat-value" id="stat-pix">R$ 0</p></div>
+    </div>
+    <button class="btn-primary" onclick="exportXLSX()" style="margin-bottom:12px;">Exportar relatório (.xlsx)</button>
+    <p class="section-title">Histórico de vendas</p>
+    <div class="card" id="sales-history"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Nenhuma venda ainda</div></div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="screen" id="screen-config">
+    <div class="card" style="margin-top:8px;">
+      <p class="section-title">Produtos cadastrados</p>
+      <div id="products-config-list"></div>
+      <button class="btn-primary" onclick="openModal('modal-add-product')" style="margin-top:10px;">+ Adicionar produto</button>
+    </div>
+    <div class="card">
+      <p class="section-title">Identidade visual</p>
+      <p style="font-size:13px;color:#555;margin-bottom:8px;">Personalize o app para a sua seção.</p>
+      <input class="input-field" id="config-section-name" placeholder="Nome da seção" />
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Cor do cabeçalho</label>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <input type="color" id="config-header-color" style="width:44px;height:36px;padding:2px;border:0.5px solid rgba(0,0,0,0.2);border-radius:6px;cursor:pointer;" />
+        <span id="config-color-label" style="font-size:13px;color:#555;"></span>
+      </div>
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">Logo (aparece no cabeçalho e na nota)</label>
+      <input type="file" id="config-logo-input" accept="image/*" style="font-size:13px;margin-bottom:8px;width:100%;" />
+      <div id="config-logo-preview" style="margin-bottom:8px;"></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#555;margin-bottom:10px;cursor:pointer;">
+        <input type="checkbox" id="config-note-logo" style="width:16px;height:16px;" />
+        Incluir logo na nota de impressão
+      </label>
+      <button class="btn-primary" onclick="saveVisualConfig()">Salvar identidade visual</button>
+    </div>
+    <div class="card">
+      <p class="section-title">Chave PIX</p>
+      <p style="font-size:13px;color:#555;margin-bottom:8px;">Chave usada nos QR Codes gerados na finalização de vendas PIX.</p>
+      <input class="input-field" id="config-pix-key" placeholder="Chave PIX" />
+      <input class="input-field" id="config-pix-name" placeholder="Nome do recebedor (ex: Tropa Sênior)" />
+      <button class="btn-primary" onclick="savePixConfig()">Salvar configuração PIX</button>
+    </div>
+  </div>
+
+  <!-- MODAL FINALIZAR -->
+  <div class="overlay" id="modal-finalize">
+    <div class="modal" style="position:relative;">
+      <button class="modal-close" onclick="closeModal('modal-finalize')">&#x2715;</button>
+      <p class="modal-title">Finalizar venda</p>
+      <div id="finalize-content"></div>
+    </div>
+  </div>
+
+  <!-- MODAL NOVA CONTA -->
+  <div class="overlay" id="modal-new-account">
+    <div class="modal" style="position:relative;">
+      <button class="modal-close" onclick="closeModal('modal-new-account')">&#x2715;</button>
+      <p class="modal-title">Nova conta</p>
+      <input class="input-field" id="new-account-name" placeholder="Nome do cliente" />
+      <input class="input-field" id="new-account-contact" placeholder="Contato (opcional)" />
+      <button class="btn-primary" onclick="createAccount()">Criar conta</button>
+    </div>
+  </div>
+
+  <!-- MODAL DETALHE CONTA -->
+  <div class="overlay" id="modal-account-detail">
+    <div class="modal" style="position:relative;">
+      <button class="modal-close" onclick="closeModal('modal-account-detail')">&#x2715;</button>
+      <p class="modal-title" id="account-detail-title">Conta</p>
+      <div id="account-detail-items"></div>
+      <div class="total-row"><span class="total-label">Total em aberto</span><span style="font-size:20px;font-weight:600;color:#a32d2d;" id="account-detail-total">R$ 0,00</span></div>
+      <p class="section-title" style="margin-top:4px;">Como foi pago?</p>
+      <div class="pay-choice">
+        <button class="pay-choice-btn" onclick="payAccount('dinheiro')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a2a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
+          Dinheiro
+        </button>
+        <button class="pay-choice-btn" onclick="showAccountPixQR()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a2a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          PIX
+        </button>
+      </div>
+      <div id="account-pix-qr" style="display:none;text-align:center;padding:12px 0 4px;">
+        <p style="font-size:12px;color:#888;margin-bottom:4px;" id="account-pix-chave"></p>
+        <p style="font-size:18px;font-weight:600;color:#1a3a2a;margin-bottom:12px;" id="account-pix-valor"></p>
+        <div id="account-qrcode-container" style="display:inline-block;"></div>
+        <p style="font-size:11px;color:#aaa;margin-top:8px;">Aponte a câmera ou abra o app do banco</p>
+        <button class="btn-primary" onclick="payAccount('pix')" style="margin-top:14px;">Confirmar pagamento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ADICIONAR PRODUTO -->
+  <div class="overlay" id="modal-add-product">
+    <div class="modal" style="position:relative;">
+      <button class="modal-close" onclick="closeModal('modal-add-product')">&#x2715;</button>
+      <p class="modal-title">Novo produto</p>
+      <input class="input-field" id="new-product-name" placeholder="Nome do produto" />
+      <input class="input-field" id="new-product-price" placeholder="Preço (ex: 5.00)" type="number" min="0" step="0.01" />
+      <button class="btn-primary" onclick="addProduct()">Salvar produto</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+let state = JSON.parse(localStorage.getItem('pdv_senior') || 'null') || {
+  products: [
+    { id: 1, name: 'Refrigerante', price: 5 },
+    { id: 2, name: 'Água', price: 2 },
+    { id: 3, name: 'Salgado', price: 4 },
+    { id: 4, name: 'Doce', price: 3 },
+  ],
+  cart: [], accounts: [], sales: [],
+  payMethod: null, nextId: 100,
+  pixKey: '',
+  pixName: '',
+  sectionName: 'Tropa Sênior Tracatrá II',
+  headerColor: '#831D1B',
+  logoB64: null,
+  noteLogo: false,
+};
+let activeAccount = null;
+
+function save() { localStorage.setItem('pdv_senior', JSON.stringify(state)); }
+function fmt(v) { return 'R$ ' + v.toFixed(2).replace('.', ','); }
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'resumo') renderResumo();
+  if (name === 'relatorio') renderReport();
+  if (name === 'contas') renderAccounts();
+  if (name === 'config') renderProductsConfig();
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── Produtos ──────────────────────────────────────────────────────────────────
+function renderProducts() {
+  const grid = document.getElementById('products-grid');
+  if (!state.products.length) { grid.innerHTML = '<p style="color:#aaa;font-size:13px;grid-column:span 2;">Nenhum produto. Adicione em Config.</p>'; return; }
+  grid.innerHTML = state.products.map(p =>
+    `<button class="product-btn" onclick="addToCart(${p.id})">
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">${fmt(p.price)}</div>
+    </button>`).join('');
+}
+
+function addToCart(id) {
+  const p = state.products.find(x => x.id === id);
+  if (!p) return;
+  const ex = state.cart.find(x => x.id === id);
+  if (ex) ex.qty++; else state.cart.push({ id: p.id, name: p.name, price: p.price, qty: 1 });
+  save(); renderCart();
+}
+
+function changeQty(id, delta) {
+  const item = state.cart.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) state.cart = state.cart.filter(x => x.id !== id);
+  save(); renderCart();
+}
+
+function getCartTotal() { return state.cart.reduce((s, i) => s + i.price * i.qty, 0); }
+
+function renderCart() {
+  const el = document.getElementById('cart-items');
+  const count = state.cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-count').textContent = 'Carrinho: ' + count;
+  document.getElementById('cart-total').textContent = fmt(getCartTotal());
+  const btn = document.getElementById('btn-finalizar');
+  if (!state.cart.length) {
+    el.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Nenhum item</div>';
+    btn.disabled = true; return;
+  }
+  el.innerHTML = state.cart.map(i =>
+    `<div class="cart-item">
+      <span class="cart-item-name">${i.name}</span>
+      <div class="cart-qty">
+        <button class="qty-btn" onclick="changeQty(${i.id},-1)">−</button>
+        <span style="font-size:13px;min-width:18px;text-align:center;">${i.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i.id},1)">+</button>
+      </div>
+      <span class="cart-item-price">${fmt(i.price * i.qty)}</span>
+    </div>`).join('');
+  btn.disabled = !state.payMethod;
+}
+
+function updatePixBtn() {
+  const pixBtn = document.getElementById('pay-pix');
+  const hasPix = !!(state.pixKey && state.pixKey.trim());
+  pixBtn.disabled = !hasPix;
+  pixBtn.style.opacity = hasPix ? '1' : '0.35';
+  pixBtn.title = hasPix ? '' : 'Configure uma chave PIX em Config';
+  // Se PIX estava selecionado e chave foi removida, desselecionar
+  if (!hasPix && state.payMethod === 'pix') {
+    state.payMethod = null;
+    pixBtn.classList.remove('selected');
+    document.getElementById('btn-finalizar').disabled = true;
+  }
+}
+
+function selectPay(method) {
+  if (method === 'pix' && !(state.pixKey && state.pixKey.trim())) return;
+  state.payMethod = method;
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('pay-' + method).classList.add('selected');
+  document.getElementById('btn-finalizar').disabled = !state.cart.length;
+}
+
+// ── PIX ───────────────────────────────────────────────────────────────────────
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+  }
+  return ((crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0'));
+}
+function tlv(id, value) { return id + value.length.toString().padStart(2, '0') + value; }
+function buildPixPayload(key, name, amount, descricao) {
+  const merchantName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').substring(0, 25);
+  const gui = tlv('00', 'BR.GOV.BCB.PIX') + tlv('01', key);
+  let campo62 = tlv('05', '***');
+  if (descricao) {
+    const desc = descricao.normalize('NFD').replace(/[\u0300-\u036f]/g, '').substring(0, 72);
+    campo62 += tlv('02', desc);
+  }
+  const payload = tlv('00','01') + tlv('26',gui) + tlv('52','0000') + tlv('53','986') +
+    tlv('54', amount.toFixed(2)) + tlv('58','BR') + tlv('59', merchantName) +
+    tlv('60','Brasil') + tlv('62', campo62);
+  return payload + tlv('63', crc16(payload + '6304'));
+}
+
+// ── Finalizar venda ───────────────────────────────────────────────────────────
+function openFinalize() {
+  if (!state.cart.length || !state.payMethod) return;
+  const total = getCartTotal();
+  let html = state.cart.map(i =>
+    `<div class="detail-row"><span>${i.qty}x ${i.name}</span><span>${fmt(i.price * i.qty)}</span></div>`).join('');
+  html += `<div class="total-row"><span class="total-label">Total</span><span style="font-size:20px;font-weight:600;">${fmt(total)}</span></div>`;
+
+  if (state.payMethod === 'dinheiro') {
+    html += `<p class="section-title" style="margin-top:12px;">Valor recebido</p>
+      <input class="input-field" id="input-recebido" type="number" min="0" step="0.01" placeholder="0,00" oninput="calcTroco()" />
+      <div class="troco-box" id="troco-box">
+        <span class="troco-label" id="troco-label">Troco</span>
+        <span class="troco-value" id="troco-val">R$ 0,00</span>
+      </div>`;
+  }
+  if (state.payMethod === 'pix') {
+    html += `<div class="pix-box" id="pix-qr-area">
+      <p class="pix-chave">PIX · ${state.pixKey}</p>
+      <p class="pix-valor">${fmt(total)}</p>
+      <div id="qrcode-container" style="display:inline-block;"></div>
+      <p style="font-size:11px;color:#aaa;margin-top:8px;">Aponte a câmera ou abra o app do banco</p>
+    </div>`;
+  }
+  if (state.payMethod === 'conta') {
+    const openAccounts = state.accounts.filter(a => a.open);
+    html += `<p class="section-title" style="margin-top:12px;">Adicionar à conta de</p>
+      <select class="input-field" id="select-account">
+        <option value="">— selecione —</option>
+        ${openAccounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('')}
+      </select>`;
+  }
+  html += `<button class="btn-primary" onclick="confirmSale()">Confirmar</button>`;
+  document.getElementById('finalize-content').innerHTML = html;
+  openModal('modal-finalize');
+
+  if (state.payMethod === 'pix') {
+    const payload = buildPixPayload(state.pixKey, state.pixName, total, 'Cantina Tropa Senior 2');
+    new QRCode(document.getElementById('qrcode-container'), {
+      text: payload, width: 200, height: 200,
+      colorDark: '#8B1A1A', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+}
+
+function calcTroco() {
+  const recebido = parseFloat(document.getElementById('input-recebido').value) || 0;
+  const troco = recebido - getCartTotal();
+  const box = document.getElementById('troco-box');
+  box.className = 'troco-box' + (troco < 0 ? ' insuf' : '');
+  document.getElementById('troco-label').textContent = troco < 0 ? 'Falta' : 'Troco';
+  document.getElementById('troco-val').textContent = fmt(Math.abs(troco));
+}
+
+function confirmSale() {
+  const total = getCartTotal();
+  if (state.payMethod === 'dinheiro') {
+    const recebido = parseFloat(document.getElementById('input-recebido').value) || 0;
+    if (recebido < total) { alert('Valor recebido insuficiente.'); return; }
+  }
+  const sale = { id: state.nextId++, items: [...state.cart], total, method: state.payMethod, date: new Date().toLocaleString('pt-BR'), accountId: null };
+  if (state.payMethod === 'dinheiro') {
+    const recebido = parseFloat(document.getElementById('input-recebido').value) || 0;
+    sale.recebido = recebido; sale.troco = recebido - total;
+  }
+  if (state.payMethod === 'conta') {
+    const sel = document.getElementById('select-account');
+    if (!sel || !sel.value) { alert('Selecione uma conta.'); return; }
+    sale.accountId = parseInt(sel.value);
+    const acc = state.accounts.find(a => a.id === sale.accountId);
+    if (acc) acc.items.push(sale);
+  }
+  state.sales.push(sale);
+  state.cart = []; state.payMethod = null;
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+  save(); renderCart();
+  showSaleConfirmed(sale);
+}
+
+function showSaleConfirmed(sale) {
+  const labels = { dinheiro: 'Dinheiro', pix: 'PIX', conta: 'Conta', conta_paga_pix: 'Conta paga (PIX)', conta_paga_dinheiro: 'Conta paga (Dinheiro)' };
+  let html = '<div style="text-align:center;padding:8px 0 16px;">';
+  html += '<div style="font-size:32px;margin-bottom:6px;">&#x2705;</div>';
+  html += '<p style="font-size:16px;font-weight:600;color:#1a3a2a;margin-bottom:2px;">Venda confirmada</p>';
+  html += '<p style="font-size:13px;color:#888;">' + sale.date + '</p></div>';
+  html += sale.items.map(i => '<div class="detail-row"><span>' + i.qty + 'x ' + i.name + '</span><span>' + fmt(i.price * i.qty) + '</span></div>').join('');
+  html += '<div class="total-row"><span class="total-label">Total</span><span style="font-size:20px;font-weight:600;">' + fmt(sale.total) + '</span></div>';
+  html += '<div class="detail-row" style="margin-bottom:12px;"><span style="color:#888;">Pagamento</span><span>' + (labels[sale.method]||sale.method) + '</span></div>';
+  if (sale.method === 'dinheiro' && sale.troco != null) {
+    html += '<div class="detail-row" style="margin-bottom:12px;"><span style="color:#888;">Troco</span><span style="color:#0f6e56;font-weight:500;">' + fmt(sale.troco) + '</span></div>';
+  }
+  html += '<button class="btn-primary" onclick="printNote(' + sale.id + ')" style="background:#1a3a2a;">&#x1F4C4; Imprimir nota</button>';
+  html += `<button class="btn-secondary" onclick="closeModal('modal-finalize')" style="margin-top:8px;width:100%;">Fechar</button>`;
+  document.getElementById('finalize-content').innerHTML = html;
+}
+
+// ── Contas ────────────────────────────────────────────────────────────────────
+function renderAccounts() {
+  const el = document.getElementById('accounts-list');
+  const open = state.accounts.filter(a => a.open);
+  if (!open.length) {
+    el.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Nenhuma conta aberta</div>';
+    return;
+  }
+  el.innerHTML = open.map(a => {
+    const total = a.items.reduce((s, sale) => s + sale.total, 0);
+    return `<div class="tab-account" onclick="openAccountDetail(${a.id})">
+      <div>
+        <div class="tab-account-name">${a.name}</div>
+        <div style="font-size:11px;color:#aaa;">${a.contact || ''}</div>
+      </div>
+      <span class="tab-account-val">${fmt(total)}</span>
+    </div>`;
+  }).join('');
+}
+
+function createAccount() {
+  const name = document.getElementById('new-account-name').value.trim();
+  if (!name) { alert('Informe o nome.'); return; }
+  state.accounts.push({ id: state.nextId++, name, contact: document.getElementById('new-account-contact').value.trim(), items: [], open: true });
+  document.getElementById('new-account-name').value = '';
+  document.getElementById('new-account-contact').value = '';
+  save(); closeModal('modal-new-account'); renderAccounts();
+}
+
+function openAccountDetail(id) {
+  activeAccount = state.accounts.find(a => a.id === id);
+  if (!activeAccount) return;
+  document.getElementById('account-pix-qr').style.display = 'none';
+  document.getElementById('account-qrcode-container').innerHTML = '';
+  document.getElementById('account-detail-title').textContent = activeAccount.name;
+  const total = activeAccount.items.reduce((s, sale) => s + sale.total, 0);
+  document.getElementById('account-detail-total').textContent = fmt(total);
+  const el = document.getElementById('account-detail-items');
+  el.innerHTML = !activeAccount.items.length
+    ? '<p style="font-size:13px;color:#aaa;padding:8px 0;">Nenhum lançamento</p>'
+    : activeAccount.items.map(s =>
+        `<div class="detail-row"><span>${s.items.map(i => i.qty+'x '+i.name).join(', ')}</span><span style="color:#111;font-weight:500;">${fmt(s.total)}</span></div>`
+      ).join('');
+  openModal('modal-account-detail');
+}
+
+function showAccountPixQR() {
+  if (!activeAccount) return;
+  const total = activeAccount.items.reduce((s, sale) => s + sale.total, 0);
+  document.getElementById('account-pix-chave').textContent = 'PIX · ' + state.pixKey;
+  document.getElementById('account-pix-valor').textContent = fmt(total);
+  document.getElementById('account-pix-qr').style.display = 'block';
+  const container = document.getElementById('account-qrcode-container');
+  container.innerHTML = '';
+  const desc = 'Cantina Tropa Senior 2 - conta ' + activeAccount.name;
+  const payload = buildPixPayload(state.pixKey, state.pixName, total, desc);
+  new QRCode(container, {
+    text: payload, width: 200, height: 200,
+    colorDark: '#8B1A1A', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+function payAccount(method) {
+  if (!activeAccount) return;
+  const total = activeAccount.items.reduce((s, sale) => s + sale.total, 0);
+  const methodKey = method === 'pix' ? 'conta_paga_pix' : 'conta_paga_dinheiro';
+  state.sales.push({
+    id: state.nextId++,
+    items: [{ name: 'Pagamento conta: ' + activeAccount.name, qty: 1, price: total }],
+    total, method: methodKey, date: new Date().toLocaleString('pt-BR'),
+    accountId: activeAccount.id,
+  });
+  activeAccount.open = false;
+  activeAccount.paidMethod = method;
+  activeAccount.items = [];
+  save(); closeModal('modal-account-detail'); renderAccounts();
+}
+
+// ── Resumo com gráfico torta ──────────────────────────────────────────────────
+const PIE_COLORS = {
+  pix:                '#185fa5',
+  dinheiro:           '#3b6d11',
+  conta:              '#a32d2d',
+  conta_paga_pix:     '#5DCAA5',
+  conta_paga_dinheiro:'#BA7517',
+};
+const PIE_LABELS = {
+  pix:                'PIX',
+  dinheiro:           'Dinheiro',
+  conta:              'Conta em aberto',
+  conta_paga_pix:     'Conta paga (PIX)',
+  conta_paga_dinheiro:'Conta paga (Dinheiro)',
+};
+
+function calcSegments() {
+  const totals = { pix: 0, dinheiro: 0, conta: 0, conta_paga_pix: 0, conta_paga_dinheiro: 0 };
+  state.sales.forEach(s => {
+    if (s.method === 'pix') totals.pix += s.total;
+    else if (s.method === 'dinheiro') totals.dinheiro += s.total;
+    else if (s.method === 'conta_paga_pix') totals.conta_paga_pix += s.total;
+    else if (s.method === 'conta_paga_dinheiro') totals.conta_paga_dinheiro += s.total;
+  });
+  // contas em aberto: apenas o saldo atual das contas ainda abertas
+  state.accounts.filter(a => a.open).forEach(a => {
+    totals.conta += a.items.reduce((s, sale) => s + sale.total, 0);
+  });
+  return totals;
+}
+
+function drawPie(canvas, segments, total) {
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2, r = cx - 10;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (total === 0) {
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#eee'; ctx.fill(); return;
+  }
+  let startAngle = -Math.PI / 2;
+  Object.entries(segments).forEach(([key, val]) => {
+    if (val <= 0) return;
+    const slice = (val / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = PIE_COLORS[key];
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    startAngle += slice;
+  });
+  // buraco central
+  ctx.beginPath(); ctx.arc(cx, cy, r * 0.48, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+}
+
+function renderResumo() {
+  const segs = calcSegments();
+  const totalPago = segs.pix + segs.dinheiro + segs.conta_paga_pix + segs.conta_paga_dinheiro;
+  const totalAberto = segs.conta;
+  const totalGeral = totalPago + totalAberto;
+
+  document.getElementById('res-total').textContent = fmt(totalPago);
+  document.getElementById('res-aberto').textContent = fmt(totalAberto);
+
+  const canvas = document.getElementById('pie-chart');
+  drawPie(canvas, segs, totalGeral);
+
+  const legend = document.getElementById('pie-legend');
+  if (totalGeral === 0) {
+    legend.innerHTML = '<p style="font-size:13px;color:#aaa;text-align:center;padding:8px 0;">Nenhuma venda registrada</p>';
+    return;
+  }
+  legend.innerHTML = Object.entries(segs)
+    .filter(([, val]) => val > 0)
+    .map(([key, val]) => `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${PIE_COLORS[key]};"></div>
+        <span class="legend-label">${PIE_LABELS[key]}</span>
+        <span class="legend-val">${fmt(val)}</span>
+        <span class="legend-pct">${Math.round(val / totalGeral * 100)}%</span>
+      </div>`).join('');
+}
+
+// ── Relatório ─────────────────────────────────────────────────────────────────
+function renderReport() {
+  const today = new Date().toLocaleDateString('pt-BR');
+  const paid = state.sales.filter(s => s.method !== 'conta' && s.date.startsWith(today));
+  const total = paid.reduce((s, x) => s + x.total, 0);
+  const dinheiro = paid.filter(s => s.method === 'dinheiro').reduce((s, x) => s + x.total, 0);
+  const pix = paid.filter(s => s.method === 'pix').reduce((s, x) => s + x.total, 0);
+  document.getElementById('stat-total').textContent = fmt(total);
+  document.getElementById('stat-count').textContent = paid.length;
+  document.getElementById('stat-dinheiro').textContent = fmt(dinheiro);
+  document.getElementById('stat-pix').textContent = fmt(pix);
+
+  const labels = { dinheiro: 'Dinheiro', pix: 'PIX', conta: 'Conta', conta_paga_pix: 'Conta paga (PIX)', conta_paga_dinheiro: 'Conta paga (Dinheiro)' };
+  const badges = { dinheiro: 'badge-green', pix: 'badge-blue', conta: 'badge-red', conta_paga_pix: 'badge-green', conta_paga_dinheiro: 'badge-amber' };
+  const hist = document.getElementById('sales-history');
+  const all = [...state.sales].reverse();
+  if (!all.length) { hist.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Nenhuma venda ainda</div>'; return; }
+  hist.innerHTML = all.map(s => {
+    const trocoLine = (s.method === 'dinheiro' && s.troco != null)
+      ? `<div style="font-size:11px;color:#0f6e56;">Recebido ${fmt(s.recebido)} · Troco ${fmt(s.troco)}</div>` : '';
+    return `<div class="sale-item">
+      <div class="sale-meta">
+        <span style="font-size:14px;font-weight:600;">${fmt(s.total)}</span>
+        <span class="badge ${badges[s.method]||'badge-green'}">${labels[s.method]||s.method}</span>
+      </div>
+      <div class="sale-desc">${s.items.map(i => i.qty+'x '+i.name).join(', ')}</div>
+      ${trocoLine}
+      <div style="font-size:11px;color:#aaa;">${s.date}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Config ────────────────────────────────────────────────────────────────────
+function renderProductsConfig() {
+  document.getElementById('config-pix-key').value = state.pixKey || '';
+  document.getElementById('config-pix-name').value = state.pixName || '';
+  document.getElementById('config-section-name').value = state.sectionName || '';
+  const color = state.headerColor || '#831D1B';
+  document.getElementById('config-header-color').value = color;
+  document.getElementById('config-color-label').textContent = color.toUpperCase();
+  document.getElementById('config-note-logo').checked = !!state.noteLogo;
+  const preview = document.getElementById('config-logo-preview');
+  if (state.logoB64) {
+    preview.innerHTML = '<img src="data:image/jpeg;base64,' + state.logoB64 + '" style="height:48px;border-radius:4px;" />';
+  } else {
+    preview.innerHTML = '';
+  }
+  const el = document.getElementById('products-config-list');
+  if (!state.products.length) { el.innerHTML = '<p style="font-size:13px;color:#aaa;">Nenhum produto.</p>'; return; }
+  el.innerHTML = state.products.map(p =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.08);">
+      <div><div style="font-size:14px;color:#111;">${p.name}</div><div style="font-size:12px;color:#888;">${fmt(p.price)}</div></div>
+      <button class="btn-danger" onclick="removeProduct(${p.id})">&#x1F5D1;</button>
+    </div>`).join('');
+}
+
+function savePixConfig() {
+  const key = document.getElementById('config-pix-key').value.trim();
+  const name = document.getElementById('config-pix-name').value.trim();
+  if (!key) { alert('Informe a chave PIX.'); return; }
+  state.pixKey = key; state.pixName = name || 'Recebedor';
+  save(); updatePixBtn(); alert('Configuração PIX salva.');
+}
+
+function addProduct() {
+  const name = document.getElementById('new-product-name').value.trim();
+  const price = parseFloat(document.getElementById('new-product-price').value);
+  if (!name || isNaN(price) || price < 0) { alert('Preencha nome e preço válidos.'); return; }
+  state.products.push({ id: state.nextId++, name, price });
+  document.getElementById('new-product-name').value = '';
+  document.getElementById('new-product-price').value = '';
+  save(); closeModal('modal-add-product'); renderProducts(); renderProductsConfig();
+}
+
+function removeProduct(id) {
+  state.products = state.products.filter(p => p.id !== id);
+  save(); renderProducts(); renderProductsConfig();
+}
+
+// ── Exportação XLSX ───────────────────────────────────────────────────────────
+async function exportXLSX() {
+  if (!state.sales.length) { alert('Nenhuma venda para exportar.'); return; }
+  const labels = { dinheiro: 'Dinheiro', pix: 'PIX', conta: 'Conta', conta_paga_pix: 'Conta paga (PIX)', conta_paga_dinheiro: 'Conta paga (Dinheiro)' };
+  const today = new Date().toLocaleDateString('pt-BR');
+  const wb = XLSX.utils.book_new();
+
+  // IDs das contas que já foram quitadas
+  const contasQuitadas = new Set(
+    state.sales
+      .filter(s => s.method === 'conta_paga_pix' || s.method === 'conta_paga_dinheiro')
+      .map(s => s.accountId)
+      .filter(id => id != null)
+  );
+
+  const historicoRows = [['Data','Forma de pagamento','Itens','Total (R$)','Recebido (R$)','Troco (R$)']];
+  state.sales.forEach(s => {
+    // Lançamentos em conta que já foram quitados: exibe com total zerado
+    if (s.method === 'conta' && s.accountId != null && contasQuitadas.has(s.accountId)) {
+      historicoRows.push([s.date, labels[s.method]||s.method, s.items.map(i=>i.qty+'x '+i.name).join(', '), 0, '', '']);
+    } else {
+      historicoRows.push([s.date, labels[s.method]||s.method, s.items.map(i=>i.qty+'x '+i.name).join(', '), s.total, s.recebido!=null?s.recebido:'', s.troco!=null?s.troco:'']);
+    }
+  });
+  const wsH = XLSX.utils.aoa_to_sheet(historicoRows);
+  wsH['!cols'] = [{wch:20},{wch:22},{wch:40},{wch:12},{wch:14},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsH, 'Histórico');
+
+  const segs = calcSegments();
+  const totalGeral = Object.values(segs).reduce((s,v)=>s+v,0);
+  const resumoRows = [
+    ['Relatório PDV — Tropa Sênior'],
+    ['Gerado em:', new Date().toLocaleString('pt-BR')],
+    [],
+    ['Categoria','Total (R$)','% do total'],
+    ...Object.entries(segs).filter(([,v])=>v>0).map(([k,v])=>[PIE_LABELS[k], v, totalGeral>0?Math.round(v/totalGeral*100)+'%':'0%']),
+    [],
+    ['TOTAL ARRECADADO', segs.pix+segs.dinheiro+segs.conta_paga_pix+segs.conta_paga_dinheiro],
+    ['EM ABERTO', segs.conta],
+  ];
+  const wsR = XLSX.utils.aoa_to_sheet(resumoRows);
+  wsR['!cols'] = [{wch:26},{wch:14},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
+
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const filename = 'relatorio_pdv_' + today.replace(/\//g, '-') + '.xlsx';
+
+  if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename)] })) {
+    try { await navigator.share({ files: [new File([blob], filename, { type: blob.type })], title: 'Relatório PDV' }); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function printNote(saleId) {
+  const sale = state.sales.find(s => s.id === saleId);
+  if (!sale) return;
+  const labels = { dinheiro: 'Dinheiro', pix: 'PIX', conta: 'Conta', conta_paga_pix: 'Conta paga (PIX)', conta_paga_dinheiro: 'Conta paga (Dinheiro)' };
+  const W = 32;
+  const divider = '-'.repeat(W);
+  const line = (left, right) => {
+    const gap = W - left.length - right.length;
+    return left + (gap > 0 ? ' '.repeat(gap) : ' ') + right;
+  };
+  let rows = [];
+  const title = ('CANTINA ' + (state.sectionName)).toUpperCase();
+  rows.push(' '.repeat(Math.floor((W - title.length) / 2)) + title);
+  rows.push(divider);
+  rows.push(sale.date);
+  rows.push(divider);
+  sale.items.forEach(i => {
+    const left = i.qty + 'x ' + i.name;
+    const right = fmt(i.price * i.qty);
+    rows.push(line(left.substring(0, W - right.length - 1), right));
+  });
+  rows.push(divider);
+  rows.push(line('TOTAL', fmt(sale.total)));
+  rows.push(line('Pagamento:', labels[sale.method] || sale.method));
+  if (sale.method === 'dinheiro' && sale.troco != null) {
+    rows.push(line('Recebido:', fmt(sale.recebido)));
+    rows.push(line('Troco:', fmt(sale.troco)));
+  }
+  rows.push(divider);
+  rows.push('');
+
+  // Linhas em branco no final (dentro do pre para impressão térmica)
+
+  let logoSection = '';
+  if (state.noteLogo && state.logoB64) {
+    const mime = state.logoMime || 'image/jpeg';
+    logoSection = '<div style="text-align:center;margin-top:6px;"><img src="data:' + mime + ';base64,' + state.logoB64 + '" style="width:20mm;display:block;margin:0 auto;" /></div>';
+  }
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+@page { margin: 2mm; size: 58mm auto; }
+* { margin: 0; padding: 0; }
+body { font-family: 'Courier New', monospace; font-size: 11px; width: 52mm; color: #000; background: #fff; }
+pre { white-space: pre; line-height: 1.45; }
+</style></head><body><pre>${rows.join('\n')}</pre>${logoSection}</body></html>`;
+
+  let iframe = document.getElementById('print-frame');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'print-frame';
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
+    document.body.appendChild(iframe);
+  }
+  iframe.onload = function() {
+    try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert('Erro ao imprimir.'); }
+  };
+  iframe.srcdoc = html;
+}
+
+async function exportContasAbertas() {
+  const abertas = state.accounts.filter(a => a.open);
+  if (!abertas.length) { alert('Nenhuma conta em aberto.'); return; }
+
+  const wb = XLSX.utils.book_new();
+  const rows = [['Nome', 'Contato', 'Itens', 'Total em aberto (R$)']];
+  let totalGeral = 0;
+  abertas.forEach(a => {
+    const total = a.items.reduce((s, sale) => s + sale.total, 0);
+    const itens = a.items.map(s => s.items.map(i => i.qty + 'x ' + i.name).join(', ')).join(' | ');
+    rows.push([a.name, a.contact || '', itens, total]);
+    totalGeral += total;
+  });
+  rows.push([]);
+  rows.push(['TOTAL EM ABERTO', '', '', totalGeral]);
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:22},{wch:18},{wch:40},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Contas em aberto');
+
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const today = new Date().toLocaleDateString('pt-BR');
+  const filename = 'contas_abertas_' + today.replace(/\//g, '-') + '.xlsx';
+
+  if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename)] })) {
+    try { await navigator.share({ files: [new File([blob], filename, { type: blob.type })], title: 'Contas em aberto' }); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function applyVisualConfig() {
+  const name = state.sectionName || 'PDV Sênior';
+  const color = state.headerColor || '#831D1B';
+  // Atualizar cor do header
+  const header = document.querySelector('.header');
+  if (header) header.style.background = color;
+  const badge = document.querySelector('.header-badge');
+  if (badge) badge.style.background = adjustColor(color, -30);
+  // Atualizar cor dos elementos de destaque
+  const style = document.getElementById('dynamic-theme');
+  const styleEl = style || document.createElement('style');
+  styleEl.id = 'dynamic-theme';
+  styleEl.textContent = `
+    .nav-btn.active { color: ${color} !important; border-bottom-color: ${color} !important; }
+    .pay-btn.selected { border-color: ${color} !important; background: ${color}18 !important; color: ${color} !important; }
+    .btn-primary { background: ${color} !important; }
+    .btn-primary:disabled { background: #ccc !important; color: #888 !important; }
+    .btn-secondary { color: ${color} !important; border-color: ${color} !important; }
+    .input-field:focus { border-color: ${color} !important; }
+    .pay-choice-btn svg { stroke: ${color} !important; }
+  `;
+  if (!style) document.head.appendChild(styleEl);
+  // Atualizar logo e nome no header
+  const titleSpan = document.querySelector('.header-title');
+  if (titleSpan) {
+    let logoHtml = '';
+    if (state.logoB64) {
+      logoHtml = `<img src="data:${state.logoMime||'image/jpeg'};base64,${state.logoB64}" style="height:40px;width:40px;object-fit:cover;border-radius:4px;margin-right:10px;flex-shrink:0;" />`;
+    }
+    titleSpan.innerHTML = logoHtml + name;
+  }
+}
+
+function adjustColor(hex, amount) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0xff) + amount));
+  const b = Math.min(255, Math.max(0, (num & 0xff) + amount));
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+function saveVisualConfig() {
+  const name = document.getElementById('config-section-name').value.trim();
+  const color = document.getElementById('config-header-color').value;
+  const noteLogo = document.getElementById('config-note-logo').checked;
+  if (name) state.sectionName = name;
+  state.headerColor = color;
+  state.noteLogo = noteLogo;
+  const fileInput = document.getElementById('config-logo-input');
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const dataUrl = e.target.result;
+      // Remover prefixo data:image/...;base64,
+      state.logoB64 = dataUrl.split(',')[1];
+      state.logoMime = dataUrl.split(';')[0].split(':')[1];
+      save();
+      applyVisualConfig();
+      alert('Identidade visual salva.');
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    save();
+    applyVisualConfig();
+    alert('Identidade visual salva.');
+  }
+}
+
+// ── Landing page ─────────────────────────────────────────────────────────────
+let selectedBranchColor = null;
+let landingLogoB64 = null;
+
+function selectBranch(btn) {
+  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedBranchColor = btn.dataset.color;
+}
+
+function landingLogoSelected(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    landingLogoB64 = e.target.result.split(',')[1];
+    window._landingLogoMime = e.target.result.split(';')[0].split(':')[1];
+    const preview = document.getElementById('landing-logo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('landing-logo-label').textContent = input.files[0].name;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function finishSetup() {
+  const name = document.getElementById('landing-section-name').value.trim();
+  const pixKey = document.getElementById('landing-pix-key').value.trim();
+  if (!name) { alert('Informe o nome da seção.'); return; }
+  if (!selectedBranchColor) { alert('Selecione o ramo escoteiro.'); return; }
+  if (name) state.sectionName = name;
+  state.headerColor = selectedBranchColor;
+  if (landingLogoB64) { state.logoB64 = landingLogoB64; state.logoMime = window._landingLogoMime || 'image/jpeg'; }
+  if (pixKey) { state.pixKey = pixKey; state.pixName = name; }
+  save();
+  document.getElementById('landing-page').classList.remove('active');
+  applyVisualConfig();
+  updatePixBtn();
+}
+
+function skipSetup() {
+  document.getElementById('landing-page').classList.remove('active');
+}
+
+// Mostrar landing page somente na primeira vez (sectionName não configurado)
+function checkFirstRun() {
+  const raw = localStorage.getItem('pdv_senior');
+  if (!raw) {
+    document.getElementById('landing-page').classList.add('active');
+  } else {
+    const saved = JSON.parse(raw);
+    if (!saved.sectionName || saved.sectionName === 'Tropa Sênior Tracatrá II') {
+      // Tem dados mas nunca configurou — não mostra landing para não perder vendas
+    }
+  }
+}
+
+renderProducts();
+renderCart();
+applyVisualConfig();
+updatePixBtn();
+checkFirstRun();
+</script>
+</div>
+</body>
+</html>
